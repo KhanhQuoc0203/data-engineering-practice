@@ -54,3 +54,52 @@
 [2025-05-06T20:31:48.819+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:31:48.819+0000] {dag.py:3036} INFO - Sync 1 DAGs
 [2025-05-06T20:31:48.837+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:31:48.836+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
 [2025-05-06T20:31:48.866+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.111 seconds
+[2025-05-06T20:32:19.019+0000] {processor.py:161} INFO - Started process (PID=219) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:32:19.021+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:32:19.023+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:32:19.022+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:32:19.073+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:32:19.090+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:32:19.090+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:32:19.107+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:32:19.107+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:32:19.128+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.115 seconds
+[2025-05-06T20:32:49.304+0000] {processor.py:161} INFO - Started process (PID=224) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:32:49.306+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:32:49.307+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:32:49.307+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:32:49.342+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:32:49.352+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:32:49.352+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:32:49.363+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:32:49.363+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:32:49.386+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.084 seconds
+[2025-05-06T20:33:19.594+0000] {processor.py:161} INFO - Started process (PID=229) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:33:19.595+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:33:19.597+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:33:19.596+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:33:19.633+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:33:19.646+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:33:19.646+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:33:19.661+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:33:19.660+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:33:19.686+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.095 seconds
+[2025-05-06T20:33:49.911+0000] {processor.py:161} INFO - Started process (PID=234) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:33:49.913+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:33:49.915+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:33:49.915+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:33:49.955+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:33:49.967+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:33:49.967+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:33:49.981+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:33:49.980+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:33:50.001+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.093 seconds
+[2025-05-06T20:34:20.164+0000] {processor.py:161} INFO - Started process (PID=239) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:34:20.166+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:34:20.168+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:34:20.168+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:34:20.223+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:34:20.242+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:34:20.242+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:34:20.258+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:34:20.258+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:34:20.281+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.128 seconds
+[2025-05-06T20:34:50.489+0000] {processor.py:161} INFO - Started process (PID=244) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:34:50.490+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:34:50.491+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:34:50.491+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:34:50.522+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:34:50.538+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:34:50.538+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:34:50.560+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:34:50.559+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:34:50.607+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.121 seconds
+[2025-05-06T20:35:20.757+0000] {processor.py:161} INFO - Started process (PID=249) to work on /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:35:20.759+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/exercises_dag.py for tasks to queue
+[2025-05-06T20:35:20.761+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:35:20.760+0000] {dagbag.py:538} INFO - Filling up the DagBag from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:35:20.800+0000] {processor.py:840} INFO - DAG(s) 'exercises_pipeline' retrieved from /opt/airflow/dags/exercises_dag.py
+[2025-05-06T20:35:20.814+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:35:20.813+0000] {dag.py:3036} INFO - Sync 1 DAGs
+[2025-05-06T20:35:20.835+0000] {logging_mixin.py:188} INFO - [2025-05-06T20:35:20.834+0000] {dag.py:3823} INFO - Setting next_dagrun for exercises_pipeline to None, run_after=None
+[2025-05-06T20:35:20.862+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/exercises_dag.py took 0.112 seconds
