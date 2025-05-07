@@ -2,7 +2,8 @@
 Bài tập Báo cáo
 Exercise-1 Các thành viên đã hoàn chỉnh file *main.py* trong folder của bài tập này. Khi chạy code thì đã tải và giải nén thành công các file trong các URL ban đầu vào folder *downloads* như đề bài yêu cầu, ngoại trừ file *Divvy_Trips_2220_Q1.zip* là bị lỗi không giải nén được. 
 Kết quả:<br> 
-![Uploading image.png…]()
+![image](https://github.com/user-attachments/assets/29df14df-6f52-4791-a6db-1e47b19065ca)
+
 
 
 | Exercise-2 | Các thành viên trong nhóm tìm URL chứa file ghi thông tin khí tượng tại *10:27 ngày 19-01-2024* bằng cách sử dụng *BeautifulSoup* để phân tích cú pháp HTML trả về, tìm được file ghi thông tin khí tượng tại *10:27 ngày 19-01-2024* trong 1 tag \<tr> bên trong \<table>. Sau đó tải về và dùng *Pandas* giải quyết yêu cầu của đề bài. |
