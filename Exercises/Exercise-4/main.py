@@ -1,96 +1,122 @@
+import psycopg2
 import os
-import json
 import csv
-import glob
 
 
-def find_all_json_files(root_dir):
-    json_dir = os.path.join(root_dir, '**', '*.json')
-    return glob.glob(json_dir, recursive=True)
-
-def flatten_json(json_file, prefix=''):
-    flattened = {}
+def create_tables(cur):
+    cur.execute("DROP TABLE IF EXISTS transactions CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS products CASCADE;")
+    cur.execute("DROP TABLE IF EXISTS customers CASCADE;")
     
-    for key, value in json_file.items():
-        new_key = f"{prefix}{key}" if prefix else key
-        
-        if isinstance(value, dict) and "type" in value and "coordinates" in value:
-            flattened[new_key + "_type"] = value["type"]
-            if isinstance(value["coordinates"], list) and len(value["coordinates"]) == 2:
-                flattened[new_key + "_longitude"] = value["coordinates"][0]
-                flattened[new_key + "_latitude"] = value["coordinates"][1]
-            else:
-                flattened[new_key + "_coordinates"] = str(value["coordinates"])
-        elif isinstance(value, dict):
-            nested_flattened = flatten_json(value, new_key + "_")
-            flattened.update(nested_flattened)
-        elif isinstance(value, list):
-            if all(not isinstance(item, (dict, list)) for item in value):
-                flattened[new_key] = str(value)
-            else:
-                for i, item in enumerate(value):
-                    if isinstance(item, dict):
-                        nested_flattened = flatten_json(item, f"{new_key}_{i}_")
-                        flattened.update(nested_flattened)
-                    else:
-                        flattened[f"{new_key}_{i}"] = item
-        else:
-            flattened[new_key] = value
-            
-    return flattened
-
-def convert_json_to_csv(json_file_path):
-    csv_file_path = os.path.splitext(json_file_path)[0] + '.csv'
+    cur.execute("""
+                CREATE TABLE IF NOT EXISTS customers (
+                    customer_id INTEGER PRIMARY KEY,
+                    first_name VARCHAR(50),
+                    last_name VARCHAR(50),
+                    address_1 VARCHAR(100),
+                    address_2 VARCHAR(100),
+                    city VARCHAR(50),
+                    state VARCHAR(50),
+                    zip_code INTEGER,
+                    join_date DATE
+                );
+                
+                CREATE INDEX idx_customers_name ON customers(last_name, first_name);
+                """)
     
-    try:
-        with open(json_file_path, 'r', encoding='utf-8') as json_file:
-            data = json.load(json_file)
-        
-        if isinstance(data, dict):
-            flattened_data = [flatten_json(data)]
-        elif isinstance(data, list):
-            flattened_data = [flatten_json(item) for item in data]
-        else:
-            print(f"Unexpected JSON structure in {json_file_path}")
-            return False
-        
-        all_keys = set()
-        for item in flattened_data:
-            all_keys.update(item.keys())
-        
-        headers = sorted(list(all_keys))
-        
-        with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=headers)
-            writer.writeheader()
-            writer.writerows(flattened_data)
-        
-        print(f"Successfully converted {json_file_path} to {csv_file_path}")
-        return True
+    cur.execute("""
+                CREATE TABLE IF NOT EXISTS products (
+                    product_id INTEGER PRIMARY KEY,
+                    product_code VARCHAR(10) UNIQUE NOT NULL,  
+                    product_description VARCHAR(100)
+                );
+                
+                CREATE INDEX idx_products_code ON products(product_code);
+                """)
     
-    except Exception as e:
-        print(f"Error processing {json_file_path}: {str(e)}")
-        return False
+    cur.execute("""
+                CREATE TABLE IF NOT EXISTS transactions (
+                    transaction_id VARCHAR(100) PRIMARY KEY,
+                    transaction_date DATE,
+                    product_id INTEGER REFERENCES products(product_id),
+                    product_code VARCHAR(10),
+                    product_description VARCHAR(100),
+                    quantity INTEGER,
+                    account_id INTEGER REFERENCES customers(customer_id),
+                    
+                    CONSTRAINT fk_product FOREIGN KEY (product_id) 
+                        REFERENCES products(product_id) ON DELETE RESTRICT,
+                    CONSTRAINT fk_customer FOREIGN KEY (account_id) 
+                        REFERENCES customers(customer_id) ON DELETE RESTRICT
+                );
+                
+                CREATE INDEX idx_transactions_date ON transactions(transaction_date);
+                CREATE INDEX idx_transactions_account ON transactions(account_id);
+                CREATE INDEX idx_transactions_product ON transactions(product_id);
+                """)
 
+
+def ingest_data(cur, conn):
+    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    
+    with open(os.path.join(data_dir, "accounts.csv"), 'r') as f:
+        reader = csv.reader(f)
+        header = next(reader)  
+        for row in reader:
+            cur.execute(
+                """
+                INSERT INTO customers (customer_id, first_name, last_name, address_1, address_2, city, state, zip_code, join_date)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                row
+            )
+    
+    with open(os.path.join(data_dir, "products.csv"), 'r') as f:
+        reader = csv.reader(f)
+        header = next(reader)  
+        for row in reader:
+            cur.execute(
+                """
+                INSERT INTO products (product_id, product_code, product_description)
+                VALUES (%s, %s, %s)
+                """,
+                row
+            )
+    
+    with open(os.path.join(data_dir, "transactions.csv"), 'r') as f:
+        reader = csv.reader(f)
+        header = next(reader)  
+        for row in reader:
+            cur.execute(
+                """
+                INSERT INTO transactions (transaction_id, transaction_date, product_id, product_code, product_description, quantity, account_id)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """,
+                row
+            )
+    
+    conn.commit()
 
 
 def main():
-    data_dir = os.path.join(os.path.dirname(__file__), 'data')
+    host = "postgres"
+    database = "postgres"
+    user = "postgres"
+    pas = "postgres"
     
-    json_files = find_all_json_files(data_dir)
-    
-    if not json_files:
-        print("No JSON files found in the data directory.")
-        return
-    
-    print(f"Found {len(json_files)} JSON files.")
-    
-    successful_conversions = 0
-    for json_file in json_files:
-        if convert_json_to_csv(json_file):
-            successful_conversions += 1
-    
-    print(f"Successfully converted {successful_conversions} out of {len(json_files)} files.")
+    try:
+        conn = psycopg2.connect(host=host, database=database, user=user, password=pas)
+        cur = conn.cursor()
+                
+        create_tables(cur)
+        
+        ingest_data(cur, conn)
+        
+        cur.close()
+        conn.close()
+        print('Successful')        
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"Error: {error}")
 
 
 if __name__ == "__main__":
