@@ -1,97 +1,201 @@
-import zipfile
 import os
-from io import TextIOWrapper
+import sys
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
-from datetime import datetime
+from pyspark.sql.types import *
+from datetime import datetime, timedelta
+
+# 1. CẤU HÌNH HADOOP CHO WINDOWS
+os.environ["HADOOP_HOME"] = "C:\\hadoop\\hadoop-3.0.0"
+os.environ["PATH"] = f"{os.environ['PATH']};C:\\hadoop\\hadoop-3.0.0\\bin"
+os.environ["hadoop.home.dir"] = "C:\\hadoop\\hadoop-3.0.0"
+
+# 2. KHỞI TẠO SPARK
+def initialize_spark():
+    spark = SparkSession.builder \
+        .appName("Exercise6") \
+        .config("spark.sql.repl.eagerEval.enabled", True) \
+        .config("spark.sql.session.timeZone", "UTC") \
+        .enableHiveSupport() \
+        .getOrCreate()
+    
+    spark.sparkContext.setLogLevel("WARN")
+    return spark
+
+# 3. ĐỌC DỮ LIỆU
+def read_data(spark, data_path):
+    try:
+        # Kiểm tra file tồn tại
+        required_files = ["Divvy_Trips_2019_Q4.zip", "Divvy_Trips_2020_Q1.zip"]
+        for file in required_files:
+            file_path = os.path.join(data_path, file)
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"Thiếu file bắt buộc: {file} (tìm ở: {file_path})")
 
 
-def read_zipped_csvs(spark, zip_dir):
-    dfs = []
-    for zip_file in os.listdir(zip_dir):
-        if zip_file.endswith('.zip'):
-            zip_path = os.path.join(zip_dir, zip_file)
-            with zipfile.ZipFile(zip_path, 'r') as archive:
-                for filename in archive.namelist():
-                    if filename.endswith('.csv'):
-                        with archive.open(filename) as file:
-                            df = spark.read.csv(TextIOWrapper(file, 'utf-8'), header=True, inferSchema=True)
-                            dfs.append(df)
-    return dfs[0].unionByName(*dfs[1:]) if dfs else None
+        # Schema dữ liệu
+        schema = StructType([  
+            StructField("trip_id", StringType()),
+            StructField("start_time", TimestampType()),
+            StructField("end_time", TimestampType()),
+            StructField("bikeid", StringType()),
+            StructField("tripduration", DoubleType()),
+            StructField("from_station_id", StringType()),
+            StructField("from_station_name", StringType()),
+            StructField("to_station_id", StringType()),
+            StructField("to_station_name", StringType()),
+            StructField("usertype", StringType()),
+            StructField("gender", StringType()),
+            StructField("birthyear", IntegerType())
+        ])
+
+        # Đọc dữ liệu từ các file
+        df1 = spark.read \
+            .option("header", True) \
+            .schema(schema) \
+            .csv(f"file:///{os.path.abspath(data_path)}/Divvy_Trips_2019_Q4.zip")
+        
+        df2 = spark.read \
+            .option("header", True) \
+            .schema(schema) \
+            .csv(f"file:///{os.path.abspath(data_path)}/Divvy_Trips_2020_Q1.zip")
+        
+        return df1.union(df2)
+        
+    except Exception as e:
+        print(f"LỖI ĐỌC DỮ LIỆU: {str(e)}", file=sys.stderr)
+        raise
+
+# 4. CÁC HÀM XỬ LÝ BÁO CÁO
+def create_reports_dir():
+    """Tạo thư mục reports nếu chưa tồn tại"""
+    reports_dir = get_reports_dir()
+    os.makedirs(reports_dir, exist_ok=True)
+    print(f"Thư mục báo cáo: {reports_dir}")
+
+def get_reports_dir():
+    """Lấy đường dẫn tuyệt đối đến thư mục reports"""
+    base_dir = os.getcwd()  # Lấy thư mục hiện tại nơi bạn chạy script
+    reports_dir = os.path.join(base_dir, "Exercises", "Exercise-6", "reports")
+    return reports_dir
+
+def write_report(df, report_name):
+    """Ghi báo cáo ra file CSV"""
+    reports_dir = get_reports_dir()
+    report_path = os.path.join(reports_dir, report_name)
+    print(f"Đang ghi: {report_path}")
+    
+    df.write \
+        .mode("overwrite") \
+        .option("header", True) \
+        .csv(report_path)
+
+def analyze_data(df):
+    """Thực hiện tất cả phân tích"""
+    # 1. Thời gian trung bình mỗi ngày
+    avg_duration = df.withColumn("date", to_date("start_time")) \
+        .groupBy("date") \
+        .agg(avg("tripduration").alias("avg_duration_seconds")) \
+        .orderBy("date")
+    write_report(avg_duration, "average_duration_per_day")
+
+    # 2. Số chuyến đi mỗi ngày
+    trips_count = df.withColumn("date", to_date("start_time")) \
+        .groupBy("date") \
+        .count() \
+        .orderBy("date")
+    write_report(trips_count, "trips_per_day")
+
+    # 3. Trạm phổ biến nhất theo tháng
+    popular_stations = df.withColumn("month", date_format("start_time", "yyyy-MM")) \
+        .groupBy("month", "from_station_name") \
+        .count() \
+        .orderBy("month", desc("count")) \
+        .groupBy("month") \
+        .agg(
+            first("from_station_name").alias("most_popular_station"),
+            max("count").alias("trip_count")
+        )
+    write_report(popular_stations, "popular_stations_per_month")
+
+    # 4. Top 3 trạm 2 tuần cuối
+    max_date_row = df.agg(max(to_date("start_time")).alias("max_date")).first()
+    max_date = max_date_row["max_date"]
+
+    if max_date is None:
+        print("⚠️ Không tìm thấy ngày tối đa trong dữ liệu (start_time trống?). Bỏ qua phần phân tích top 3 trạm 2 tuần cuối.")
+    else:
+        start_date = max_date - timedelta(days=14)
+        top3_stations = df.filter(to_date("start_time") >= start_date) \
+            .withColumn("date", to_date("start_time")) \
+            .groupBy("date", "from_station_name") \
+            .count() \
+            .orderBy("date", desc("count")) \
+            .groupBy("date") \
+            .agg(
+                collect_list("from_station_name").alias("top3_stations"),
+                collect_list("count").alias("trip_counts")
+            )
+        write_report(top3_stations, "top3_stations_last_two_weeks")
 
 
-def save_report(df, name):
-    output_path = f'reports/{name}.csv'
-    df.coalesce(1).write.mode('overwrite').option('header', 'true').csv(output_path)
+    # 5. So sánh theo giới tính
+    gender_comparison = df.filter(col("gender").isin(["Male", "Female"])) \
+        .groupBy("gender") \
+        .agg(
+            avg("tripduration").alias("avg_duration"),
+            count("*").alias("trip_count")
+        )
+    write_report(gender_comparison, "gender_comparison")
 
+    # 6. Phân tích theo độ tuổi
+    current_year = datetime.now().year
+    age_analysis = df.withColumn("age", current_year - col("birthyear")) \
+        .groupBy("age") \
+        .agg(
+            avg("tripduration").alias("avg_duration"),
+            count("*").alias("trip_count")
+        )
+    
+    # Top 10 độ tuổi có thời gian đi dài nhất
+    write_report(age_analysis.orderBy(desc("avg_duration")).limit(10), "top10_longest_trips_by_age")
+    
+    # Top 10 độ tuổi có thời gian đi ngắn nhất
+    write_report(age_analysis.orderBy("avg_duration").limit(10), "top10_shortest_trips_by_age")
 
-def average_trip_duration_per_day(df):
-    return df.withColumn("date", to_date("start_time")) \
-             .groupBy("date") \
-             .agg(avg("tripduration").alias("avg_trip_duration"))
-
-
-def trips_per_day(df):
-    return df.withColumn("date", to_date("start_time")) \
-             .groupBy("date") \
-             .agg(count("*").alias("trip_count"))
-
-
-def most_popular_start_station_per_month(df):
-    return df.withColumn("month", date_format("start_time", "yyyy-MM")) \
-             .groupBy("month", "from_station_name") \
-             .agg(count("*").alias("trip_count")) \
-             .withColumn("rank", row_number().over(Window.partitionBy("month").orderBy(desc("trip_count")))) \
-             .filter(col("rank") == 1).drop("rank")
-
-
-def top_3_stations_last_2_weeks(df):
-    max_date = df.select(max(to_date("start_time"))).collect()[0][0]
-    start_date = max_date - timedelta(days=14)
-
-    return df.withColumn("date", to_date("start_time")) \
-             .filter(col("date") >= lit(start_date)) \
-             .groupBy("date", "from_station_name") \
-             .agg(count("*").alias("trip_count")) \
-             .withColumn("rank", row_number().over(Window.partitionBy("date").orderBy(desc("trip_count")))) \
-             .filter(col("rank") <= 3).drop("rank")
-
-
-def avg_trip_duration_by_gender(df):
-    return df.groupBy("gender") \
-             .agg(avg("tripduration").alias("avg_trip_duration"))
-
-
-def top_10_ages_by_trip_duration(df):
-    this_year = datetime.now().year
-    df_with_age = df.withColumn("age", lit(this_year) - col("birthyear"))
-
-    longest = df_with_age.orderBy(desc("tripduration")).select("age", "tripduration").limit(10)
-    shortest = df_with_age.filter(col("tripduration") > 0).orderBy("tripduration").select("age", "tripduration").limit(10)
-
-    return longest, shortest
-
-
+# 5. HÀM CHÍNH
 def main():
-    spark = SparkSession.builder.appName("Exercise6").getOrCreate()
+    try:
+        print("===== KHỞI TẠO SPARK =====")
+        spark = initialize_spark()
+        create_reports_dir()
 
-    df = read_zipped_csvs(spark, "data")
-    if df is None:
-        print("No data found.")
-        return
+        print("\n===== ĐỌC DỮ LIỆU =====")
+        data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
+        print(f"Đường dẫn dữ liệu: {data_path}")
+        df = read_data(spark, data_path)
+        
+        print("\n===== THỐNG KÊ DỮ LIỆU =====")
+        print(f"Tổng số bản ghi: {df.count():,}")
+        print("5 bản ghi mẫu:")
+        df.show(5, truncate=False)
+        df.printSchema()
 
-    save_report(average_trip_duration_per_day(df), "avg_trip_duration_per_day")
-    save_report(trips_per_day(df), "trips_per_day")
-    save_report(most_popular_start_station_per_month(df), "popular_start_station_per_month")
-    save_report(top_3_stations_last_2_weeks(df), "top3_stations_last_2_weeks")
-    save_report(avg_trip_duration_by_gender(df), "avg_trip_duration_by_gender")
+        print("\n===== BẮT ĐẦU PHÂN TÍCH =====")
+        analyze_data(df)
 
-    longest, shortest = top_10_ages_by_trip_duration(df)
-    save_report(longest, "top10_longest_trip_ages")
-    save_report(shortest, "top10_shortest_trip_ages")
+        print("\n===== HOÀN TẤT =====")
+        print(f"Báo cáo đã được lưu tại: {get_reports_dir()}")
 
-    spark.stop()
-
+    except Exception as e:
+        print(f"\nLỖI: {str(e)}", file=sys.stderr)
+        traceback.print_exc()
+        sys.exit(1)
+        
+    finally:
+        spark.stop()
+        print("Đã đóng Spark Session")
 
 if __name__ == "__main__":
+    import traceback
     main()
