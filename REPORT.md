@@ -1,4 +1,5 @@
-![image](https://github.com/user-attachments/assets/12b15074-6de5-4ff7-8ab8-d41d7bd5f432)### Báo cáo kết quả các bài tập đã làm được của nhóm 
+Khuất Quốc Khánh_23711381 (Nhóm TH2)
+Trương Thế Hải Thịnh_23725051 (Nhóm TH3)
 Bài tập <br> 
 Báo cáo <br>
 Lap 8:
