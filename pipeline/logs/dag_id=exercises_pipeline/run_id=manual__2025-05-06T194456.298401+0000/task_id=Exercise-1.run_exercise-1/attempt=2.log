@@ -1,0 +1,28 @@
+[2025-05-09T14:57:24.445+0000] {taskinstance.py:1956} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: exercises_pipeline.Exercise-1.run_exercise-1 manual__2025-05-06T19:44:56.298401+00:00 [queued]>
+[2025-05-09T14:57:24.453+0000] {taskinstance.py:1956} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: exercises_pipeline.Exercise-1.run_exercise-1 manual__2025-05-06T19:44:56.298401+00:00 [queued]>
+[2025-05-09T14:57:24.454+0000] {taskinstance.py:2170} INFO - Starting attempt 2 of 2
+[2025-05-09T14:57:24.471+0000] {taskinstance.py:2191} INFO - Executing <Task(BashOperator): Exercise-1.run_exercise-1> on 2025-05-06 19:44:56.298401+00:00
+[2025-05-09T14:57:24.476+0000] {standard_task_runner.py:60} INFO - Started process 207 to run task
+[2025-05-09T14:57:24.481+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'exercises_pipeline', 'Exercise-1.run_exercise-1', 'manual__2025-05-06T19:44:56.298401+00:00', '--job-id', '22', '--raw', '--subdir', 'DAGS_FOLDER/exercises_dag.py', '--cfg-path', '/tmp/tmpvammt_92']
+[2025-05-09T14:57:24.483+0000] {standard_task_runner.py:88} INFO - Job 22: Subtask Exercise-1.run_exercise-1
+[2025-05-09T14:57:24.554+0000] {task_command.py:423} INFO - Running <TaskInstance: exercises_pipeline.Exercise-1.run_exercise-1 manual__2025-05-06T19:44:56.298401+00:00 [running]> on host c423529483b0
+[2025-05-09T14:57:24.788+0000] {taskinstance.py:2480} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='exercises_pipeline' AIRFLOW_CTX_TASK_ID='Exercise-1.run_exercise-1' AIRFLOW_CTX_EXECUTION_DATE='2025-05-06T19:44:56.298401+00:00' AIRFLOW_CTX_TRY_NUMBER='2' AIRFLOW_CTX_DAG_RUN_ID='manual__2025-05-06T19:44:56.298401+00:00'
+[2025-05-09T14:57:24.791+0000] {subprocess.py:63} INFO - Tmp dir root location: /tmp
+[2025-05-09T14:57:24.796+0000] {subprocess.py:75} INFO - Running command: ['/usr/bin/bash', '-c', 'cd /opt/***/app/Exercise-1 && python main.py']
+[2025-05-09T14:57:24.814+0000] {subprocess.py:86} INFO - Output:
+[2025-05-09T15:02:28.754+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2018_Q4.csv
+[2025-05-09T15:02:28.802+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q1.csv
+[2025-05-09T15:02:28.803+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q1.zip
+[2025-05-09T15:02:28.803+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q2.csv
+[2025-05-09T15:02:28.804+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q2.zip
+[2025-05-09T15:02:28.805+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q3.csv
+[2025-05-09T15:02:28.805+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q3.zip
+[2025-05-09T15:02:28.806+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q4.csv
+[2025-05-09T15:02:28.807+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2019_Q4.zip
+[2025-05-09T15:02:28.807+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2020_Q1.zip
+[2025-05-09T15:02:28.808+0000] {subprocess.py:93} INFO - Loi file downloads/Divvy_Trips_2220_Q1.zip
+[2025-05-09T15:02:28.808+0000] {subprocess.py:93} INFO - Loi file downloads/__MACOSX
+[2025-05-09T15:02:28.844+0000] {subprocess.py:97} INFO - Command exited with return code 0
+[2025-05-09T15:02:29.055+0000] {taskinstance.py:1138} INFO - Marking task as SUCCESS. dag_id=exercises_pipeline, task_id=Exercise-1.run_exercise-1, execution_date=20250506T194456, start_date=20250509T145724, end_date=20250509T150229
+[2025-05-09T15:02:29.145+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 0
+[2025-05-09T15:02:29.259+0000] {taskinstance.py:3280} INFO - 0 downstream tasks scheduled from follow-on schedule check
