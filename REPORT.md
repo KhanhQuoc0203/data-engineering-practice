@@ -4,6 +4,7 @@ Trương Thế Hải Thịnh_23725051 (Nhóm TH3)
 Bài tập <br> 
 Báo cáo <br>
 Lap 8:
+
 case 1: Nhóm đã cào dữ liệu tỉ giá từ file x-rates và kết quả File CSV được lưu ở thư mục: data/rates_YYYY-MM-DD.csv,File biểu đồ PNG được lưu ở thư mục: plots/rates_YYYY-MM-DD.png
 ![image](https://github.com/user-attachments/assets/e23cf276-37f5-47eb-aacd-c34f4f956b21)
 ![image](https://github.com/user-attachments/assets/f0839fd9-ce03-4113-83a8-04b336f15970)
@@ -12,6 +13,7 @@ case 2: Nhóm không chỉ cào dữ liệu tỉ giá lưu vào file rates mà c
 ![image](https://github.com/user-attachments/assets/d2005104-bdd8-49c6-a0b4-17941d32b053)
 
 Lap 9:
+
 Exercise-1 Các thành viên đã hoàn chỉnh file *main.py* trong folder của bài tập này. Khi chạy code thì đã tải và giải nén thành công các file trong các URL ban đầu vào folder *downloads* như đề bài yêu cầu, ngoại trừ file *Divvy_Trips_2220_Q1.zip* là bị lỗi không giải nén được. 
 Kết quả:<br> 
 ![Ex1](https://github.com/user-attachments/assets/be486189-d152-423b-bcc6-902b220e54c3)
